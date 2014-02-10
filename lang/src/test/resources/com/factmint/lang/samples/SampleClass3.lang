@@ -1,0 +1,11 @@
+dependency SampleHelper helper;
+
+field int size;
+
+construct(String name) {
+	helper.setName(name);
+}
+
+construct() {
+	construct("default");
+}

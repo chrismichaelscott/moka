@@ -1,0 +1,11 @@
+dependency SampleHelper helper;
+
+field int size;
+
+SampleHelper getHelper() {
+	if (helper.inError) {
+		throw new Exception("yo!");
+	}
+	
+	return helper;
+}

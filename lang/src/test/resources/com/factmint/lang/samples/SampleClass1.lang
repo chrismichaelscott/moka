@@ -1,0 +1,3 @@
+dependency SampleHelper helper;
+
+field int size;
