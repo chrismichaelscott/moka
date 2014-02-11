@@ -245,11 +245,53 @@ public class TransCompiler {
 		
 		method.setContents(content.replaceAll("\n$", "").replaceAll("\n\t", "\n\t\t").replaceAll("^\t", "\t\t"));
 		
-		langClass.getMethods().add(method);
-		
-		if (method.getName().equals("construct")) {
+		if (method.getName().equals(langClass.getName())) {
+			checkForConstructorConflict(langClass, method);
+			
+			langClass.getExplicitConstructors().add(method);
+		} else if (method.getName().equals("construct")) {
 			langClass.getConstructors().add(method);
+			
+			LangMethod explicitConstructor = new LangMethod();
+			explicitConstructor.setName(langClass.getName());
+			explicitConstructor.setArguments(method.getArguments());
+			explicitConstructor.setVisibility(method.getVisibility());
+			explicitConstructor.setContents("\t\tconstruct(" + getMethodCallArguments(method) + ");");
+			
+			checkForConstructorConflict(langClass, explicitConstructor);
+			
+			langClass.getExplicitConstructors().add(explicitConstructor);
+			
+			method.setVisibility(Visibility.PRIVATE);
+		} else {			
+			langClass.getMethods().add(method);
 		}
+		
+	}
+
+	private void checkForConstructorConflict(LangClass langClass, LangMethod explicitConstructor) throws CompilationException {
+		for (LangMethod existingExplicitConstructor : langClass.getExplicitConstructors()) {
+			if (existingExplicitConstructor.getArguments().hashCode() == explicitConstructor.getArguments().hashCode()) {
+				throw new CompilationException("There are conflicting constructors in " + langClass.getName());
+			}
+		}
+	}
+
+	private String getMethodCallArguments(LangMethod method) {
+		String callArguments = "";
+		
+		boolean firstArgument = true;
+		
+		for (LangVariable argument : method.getArguments()) {
+			if (firstArgument) {
+				firstArgument = false;
+			} else {
+				callArguments += ", ";
+			}
+			callArguments += argument.getName();
+		}
+		
+		return callArguments;
 	}
 
 }

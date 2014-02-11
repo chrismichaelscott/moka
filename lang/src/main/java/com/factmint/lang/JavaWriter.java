@@ -6,7 +6,6 @@ import com.factmint.lang.model.LangClass;
 import com.factmint.lang.model.LangMember;
 import com.factmint.lang.model.LangMethod;
 import com.factmint.lang.model.LangVariable;
-import com.factmint.lang.model.LangMember.Visibility;
 
 public class JavaWriter {
 	
@@ -64,11 +63,11 @@ public class JavaWriter {
 			writer.write(" extends " + langClass.getSuperClass());
 		}
 		
-		if (langClass.getImplementedInerfaces().size() > 0) {
+		if (langClass.getImplementedInterfaces().size() > 0) {
 			writer.write(" implements");
 		}
 		boolean firstImplementedInterface = true;
-		for (String implementedInterface : langClass.getImplementedInerfaces()) {
+		for (String implementedInterface : langClass.getImplementedInterfaces()) {
 			if (firstImplementedInterface) {
 				firstImplementedInterface = false;
 			} else {
@@ -93,18 +92,22 @@ public class JavaWriter {
 			writer.write("\t\n");
 		}
 		
-		for (LangMethod constructor : langClass.getConstructors()) {
-			writer.write("\t" + constructor.getVisibility().toString().toLowerCase() + " " + langClass.getName() + "(");
-			writeMethodArguments(constructor);
+		for (LangMethod explicitConstructor : langClass.getExplicitConstructors()) {
+			writer.write("\t" + explicitConstructor.getVisibility().toString().toLowerCase() + " " + explicitConstructor.getName() + "(");
+			writeMethodArguments(explicitConstructor);
 			writer.write(") {\n");
 			
-			writer.write("\t\tconstruct(");
-			writeMethodCallArguments(constructor);
-			writer.write(");\n");
-			writer.write("\t}\n\t\n");
+			writer.write(explicitConstructor.getContents());
+			writer.write("\n\t}\n\t\n");
+		}
+		
+		for (LangMethod constructors : langClass.getConstructors()) {
+			writer.write("\t" + constructors.getVisibility().toString().toLowerCase() + " " + constructors.getReturnType() + " " + constructors.getName() + "(");
+			writeMethodArguments(constructors);
+			writer.write(") {\n");
 			
-			// The constructor is also in the methods list, make it private there
-			constructor.setVisibility(Visibility.PRIVATE);
+			writer.write(constructors.getContents());
+			writer.write("\n\t}\n\t\n");
 		}
 		
 		for (LangMethod method : langClass.getMethods()) {
@@ -129,19 +132,6 @@ public class JavaWriter {
 				writer.write(", ");
 			}
 			writer.write(argument.getType() + " " + argument.getName());
-		}
-	}
-
-	private void writeMethodCallArguments(LangMethod method) {
-		boolean firstArgument = true;
-		
-		for (LangVariable argument : method.getArguments()) {
-			if (firstArgument) {
-				firstArgument = false;
-			} else {
-				writer.write(", ");
-			}
-			writer.write(argument.getName());
 		}
 	}
 	
