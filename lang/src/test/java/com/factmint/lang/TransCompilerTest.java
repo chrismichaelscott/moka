@@ -74,4 +74,17 @@ public class TransCompilerTest {
 		String filename = this.getClass().getResource("/com/factmint/lang/samples/SampleClass5ConflictingConstructors.lang").getFile();
 		compiler.compile(new File(filename));
 	}
+
+	@Test
+	public void transCompileSample66ConstructorVisibility() throws CompilationException, IOException {
+		TransCompiler compiler = new TransCompiler();
+		
+		String filename = this.getClass().getResource("/com/factmint/lang/samples/SampleClass6ConstructorVisibility.lang").getFile();
+		String java = compiler.compile(new File(filename));
+		
+		String expectedJavaFilename = this.getClass().getResource("/com/factmint/lang/expected/SampleClass6ConstructorVisibility.java").getFile();
+		byte[] encoded = Files.readAllBytes(Paths.get(expectedJavaFilename));
+		
+		assertEquals("The compiled file should match the expected Java.", Charset.forName("UTF-8").decode(ByteBuffer.wrap(encoded)).toString(), java);
+	}
 }
