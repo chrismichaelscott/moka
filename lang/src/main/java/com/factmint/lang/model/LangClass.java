@@ -5,14 +5,50 @@ import java.util.List;
 
 public class LangClass {
 
+	/**
+	 * The class name - inferred from the file name
+	 */
 	private String name;
+	
+	/**
+	 * The list of imports required for the class
+	 */
 	private List<String> imports = new ArrayList<String>();
-	private List<String> implementedInerfaces = new ArrayList<String>();
+	
+	/**
+	 * A list of implemented interfaces
+	 */
+	private List<String> implementedInterfaces = new ArrayList<String>();
+	
+	/**
+	 * The class, if any, that is extended
+	 */
 	private String superClass = "Object";
+	
+	/**
+	 * private fields which are to be set using setters in the DI model
+	 */
 	private List<LangVariable> dependencies = new ArrayList<LangVariable>();
+	
+	/**
+	 * private fields which are to be managed by the class itself
+	 */
 	private List<LangVariable> fields = new ArrayList<LangVariable>();
+	
+	/**
+	 * A list of the methods of the class
+	 */
 	private List<LangMethod> methods = new ArrayList<LangMethod>();
+	
+	/**
+	 * A list of "contruct" methods which will be referenced by contructors
+	 */
 	private List<LangMethod> constructors = new ArrayList<LangMethod>();
+	
+	/**
+	 * A list of explicit Java constructors
+	 */
+	private List<LangMethod> explicitConstructors = new ArrayList<LangMethod>();
 	
 	public String getName() {
 		return name;
@@ -30,12 +66,12 @@ public class LangClass {
 		this.imports = imports;
 	}
 	
-	public List<String> getImplementedInerfaces() {
-		return implementedInerfaces;
+	public List<String> getImplementedInterfaces() {
+		return implementedInterfaces;
 	}
 	
-	public void setImplementedInerfaces(List<String> implementedInerfaces) {
-		this.implementedInerfaces = implementedInerfaces;
+	public void setImplementedInterfaces(List<String> implementedInterfaces) {
+		this.implementedInterfaces = implementedInterfaces;
 	}
 	
 	public String getSuperClass() {
@@ -76,6 +112,14 @@ public class LangClass {
 	
 	public void setConstructors(List<LangMethod> constructors) {
 		this.constructors = constructors;
+	}
+
+	public List<LangMethod> getExplicitConstructors() {
+		return explicitConstructors;
+	}
+
+	public void setExplicitConstructors(List<LangMethod> explicitConstructors) {
+		this.explicitConstructors = explicitConstructors;
 	}
 	
 }
