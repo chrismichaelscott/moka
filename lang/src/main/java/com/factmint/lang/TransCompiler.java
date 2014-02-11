@@ -140,9 +140,7 @@ public class TransCompiler {
 		
 		methodName = tokens[cursor--];
 
-		if (cursor >= 0) {
-			returnType = tokens[cursor--];
-		}
+		boolean hadReturnType = false;
 		boolean hadVisibilityModifier = false;
 		while (cursor >= 0) {
 			String modifier = tokens[cursor--];
@@ -177,6 +175,8 @@ public class TransCompiler {
 				}
 				
 				isFinal = true;
+			} else if (! hadReturnType) {
+				returnType = modifier;
 			}
 		}
 		
