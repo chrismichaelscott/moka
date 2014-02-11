@@ -1,0 +1,11 @@
+dependency SampleHelper helper;
+
+field int size;
+
+SampleClass5ConflictingConstructors() {
+	// this is a constructor
+}
+
+construct() {
+	// this is also a constructor
+}

@@ -1,0 +1,7 @@
+dependency SampleHelper helper;
+
+field int size;
+
+SampleClass4ExplicitConstructor() {
+	// this is a constructor
+}
