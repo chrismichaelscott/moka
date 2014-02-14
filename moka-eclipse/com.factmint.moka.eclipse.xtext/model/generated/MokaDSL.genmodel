@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/com.factmint.moka.eclipse.xtext/src-gen" editDirectory="/com.factmint.moka.eclipse.xtext.edit/src"
+    editorDirectory="/com.factmint.moka.eclipse.xtext.editor/src" modelPluginID="com.factmint.moka.eclipse.xtext"
+    forceOverwrite="true" modelName="MokaDSL" updateClasspath="false" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    complianceLevel="5.0" copyrightFields="false" editPluginID="com.factmint.moka.eclipse.xtext.edit"
+    editorPluginID="com.factmint.moka.eclipse.xtext.editor" runtimeVersion="2.9" usedGenPackages="../../../org.eclipse.xtext.common.types/model/JavaVMTypes.genmodel#//types ../../../org.eclipse.xtext.xbase/model/Xbase.genmodel#//xbase ../../../org.eclipse.xtext.xbase/model/Xbase.genmodel#//xtype">
+  <genPackages prefix="MokaDSL" basePackage="com.factmint.moka.eclipse.xtext" disposableProviderFactory="true"
+      fileExtensions="moka" ecorePackage="MokaDSL.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="MokaDSL.ecore#//Visibility">
+      <genEnumLiterals ecoreEnumLiteral="MokaDSL.ecore#//Visibility/private"/>
+      <genEnumLiterals ecoreEnumLiteral="MokaDSL.ecore#//Visibility/protected"/>
+    </genEnums>
+    <genClasses ecoreClass="MokaDSL.ecore#//Model">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Model/importSection"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Model/elements"/>
+    </genClasses>
+    <genClasses ecoreClass="MokaDSL.ecore#//Element"/>
+    <genClasses ecoreClass="MokaDSL.ecore#//Dependency">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Dependency/variable"/>
+    </genClasses>
+    <genClasses ecoreClass="MokaDSL.ecore#//Field">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Field/variable"/>
+    </genClasses>
+    <genClasses ecoreClass="MokaDSL.ecore#//Constant">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Constant/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute MokaDSL.ecore#//Constant/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Constant/body"/>
+    </genClasses>
+    <genClasses ecoreClass="MokaDSL.ecore#//Constructor">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute MokaDSL.ecore#//Constructor/visibility"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Constructor/constructorArgs"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Constructor/body"/>
+    </genClasses>
+    <genClasses ecoreClass="MokaDSL.ecore#//Method">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute MokaDSL.ecore#//Method/static"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute MokaDSL.ecore#//Method/final"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute MokaDSL.ecore#//Method/visibility"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Method/returnType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute MokaDSL.ecore#//Method/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Method/constructorArgs"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Method/body"/>
+    </genClasses>
+    <genClasses ecoreClass="MokaDSL.ecore#//Variable">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//Variable/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute MokaDSL.ecore#//Variable/name"/>
+    </genClasses>
+    <genClasses ecoreClass="MokaDSL.ecore#//MethodVariable">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//MethodVariable/variable"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//MethodVariable/default"/>
+    </genClasses>
+    <genClasses ecoreClass="MokaDSL.ecore#//DefaultValue">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference MokaDSL.ecore#//DefaultValue/value"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

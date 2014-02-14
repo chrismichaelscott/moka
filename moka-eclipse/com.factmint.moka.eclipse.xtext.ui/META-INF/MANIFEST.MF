@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: com.factmint.moka.eclipse.xtext.ui
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: com.factmint.moka.eclipse.xtext.ui; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: com.factmint.moka.eclipse.xtext;visibility:=reexport,
+ org.eclipse.xtext.ui,
+ org.eclipse.ui.editors;bundle-version="3.5.0",
+ org.eclipse.ui.ide;bundle-version="3.5.0",
+ org.eclipse.xtext.ui.shared,
+ org.eclipse.ui,
+ org.eclipse.xtext.builder,
+ org.antlr.runtime,
+ org.eclipse.xtext.common.types.ui,
+ org.eclipse.xtext.ui.codetemplates.ui,
+ org.eclipse.compare,
+ org.eclipse.xtext.xbase.ui
+Import-Package: org.apache.log4j,
+ org.eclipse.xtext.xbase.lib
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: com.factmint.moka.eclipse.xtext.ui.quickfix,
+ com.factmint.moka.eclipse.xtext.ui.contentassist,
+ com.factmint.moka.eclipse.xtext.ui.contentassist.antlr,
+ com.factmint.moka.eclipse.xtext.ui.internal
+Bundle-Activator: com.factmint.moka.eclipse.xtext.ui.internal.MokaDSLActivator

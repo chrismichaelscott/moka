@@ -1,0 +1,43 @@
+grammar com.factmint.moka.eclipse.xtext.MokaDSL with org.eclipse.xtext.xbase.Xbase
+
+generate mokaDSL "http://www.factmint.com/moka/eclipse/xtext/MokaDSL"
+
+Model:
+	importSection = XImportSection?
+	elements += Element*;
+	
+Element:
+	(Dependency|Field|Constant|Constructor|Method|Comment);
+
+Dependency:
+	'dependency' variable = Variable ';';
+
+Field:
+	'field' variable = Variable ';';
+
+Constant:
+	'constant' type = JvmTypeReference name = ID (('=' (STRING|INT|IMPLICIT_DECIMAL))|body = XBlockExpression) ';';
+	
+Constructor:
+	visibility=Visibility 'construct' '(' (constructorArgs += MethodVariable)* ')' body = XBlockExpression;
+	
+Method:
+	static?='static'? & final?='final'? & visibility=Visibility? returnType = JvmTypeReference? name = ID '(' (constructorArgs += MethodVariable)* ')' body = XBlockExpression;
+
+Variable:
+	type = JvmTypeReference name = ID;
+
+MethodVariable:
+	variable = Variable ('=' default = DefaultValue)?;
+
+enum Visibility:
+	private | protected;
+
+Comment:
+	(SL_COMMENT|ML_COMMENT);
+
+DefaultValue:
+	('null'|'new'|value=[Constant]);
+
+terminal IMPLICIT_DECIMAL:
+	INT '.' INT;
