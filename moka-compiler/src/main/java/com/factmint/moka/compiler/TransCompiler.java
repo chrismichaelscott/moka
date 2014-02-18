@@ -10,9 +10,11 @@ import java.nio.charset.Charset;
 
 import com.factmint.moka.compiler.exception.CompilationException;
 import com.factmint.moka.compiler.model.MokaClass;
+import com.factmint.moka.compiler.model.MokaConstant;
+import com.factmint.moka.compiler.model.MokaMethodVariable;
+import com.factmint.moka.compiler.model.MokaMember.Visibility;
 import com.factmint.moka.compiler.model.MokaMethod;
 import com.factmint.moka.compiler.model.MokaVariable;
-import com.factmint.moka.compiler.model.MokaMember.Visibility;
 
 public class TransCompiler {
 
@@ -52,6 +54,9 @@ public class TransCompiler {
 		if (token.equals("import")) {
 			processImportDeclaration(mokaClass, reader);
 
+		} else if (token.equals("constant")) {
+			processConstantDeclaration(mokaClass, reader);
+			
 		} else if (token.equals("dependency")) {
 			processDependencyDeclaration(mokaClass, reader);
 
@@ -72,6 +77,53 @@ public class TransCompiler {
 			throw new CompilationException("Reached the end of the file without finding the class to import");
 		}
 		mokaClass.getImports().add(importClass );
+		
+		Tokenizer.checkForLineTermination(reader);
+	}
+
+	private void processConstantDeclaration(MokaClass mokaClass, BufferedReader reader) throws CompilationException {
+		String constantType;
+		try {
+			constantType = Tokenizer.readNextToken(reader);
+		} catch (EndOfStreamNotification e) {
+			throw new CompilationException("Reached the end of the file without finding the constant type");
+		}
+
+		String constantName;
+		try {
+			constantName = Tokenizer.readNextToken(reader);
+		} catch (EndOfStreamNotification e) {
+			throw new CompilationException("Reached the end of the file without finding the constant name");
+		}
+		
+		String body = "";
+		String initialValue = "";
+		
+		try {
+			Tokenizer.absorbWhitespace(reader);
+			char nextChar = Tokenizer.readNextChar(reader);
+			
+			if (nextChar == '=') {
+				Tokenizer.absorbWhitespace(reader);
+				nextChar = Tokenizer.readNextChar(reader);
+				while(nextChar != ';') {
+					initialValue += nextChar;
+					nextChar = Tokenizer.readNextChar(reader);
+				}
+				Tokenizer.reset(reader);
+			} else if (nextChar == '{') {			
+				Tokenizer.reset(reader);
+				body = indentAndFormatMethodBody(readMethodBody(reader, constantName + "_STATIC_SETTER").replaceAll("[^\n][ 	]*define[ 	]+", "	" + constantName + " = "));
+			} else {
+				throw new CompilationException("Error parsing constant definition for " + constantName + " expected \"=\" or \"{\" but found " + nextChar);
+			}
+		} catch (IOException e) {
+			throw new CompilationException(e);
+		} catch (EndOfStreamNotification e) {
+			throw new CompilationException("Reached the end of the file prematurely");
+		}
+		
+		mokaClass.getConstants().add(MokaConstant.create(constantType, constantName, initialValue, body));
 		
 		Tokenizer.checkForLineTermination(reader);
 	}
@@ -188,17 +240,27 @@ public class TransCompiler {
 				char nextChar = Tokenizer.readNextChar(reader);
 				if (nextChar == ')') {
 					break;
-				} else {
-					reader.reset();
+				} else if (nextChar != ','){
+					Tokenizer.reset(reader);
 				}
 				
-				MokaVariable argument = new MokaVariable();
+				MokaMethodVariable argument = new MokaMethodVariable();
 				token = Tokenizer.readNextToken(reader);
 				argument.setType(token);
 				token = Tokenizer.readNextToken(reader);
 				argument.setName(token);
 				
 				method.getArguments().add(argument);
+				
+				Tokenizer.absorbWhitespace(reader);
+				
+				nextChar = Tokenizer.readNextChar(reader);
+				if (nextChar == '=') {
+					token = Tokenizer.readNextToken(reader);
+					argument.setDefaultValue(token);
+				} else {
+					Tokenizer.reset(reader);
+				}
 				
 				Tokenizer.absorbWhitespace(reader);
 			} catch (EndOfStreamNotification e) {
@@ -208,39 +270,9 @@ public class TransCompiler {
 			}
 		} while (true);
 		
-		Tokenizer.scanToOpenBrace(reader);
-		try {
-			Tokenizer.absorbWhitespace(reader, false);
-		} catch (EndOfStreamNotification e1) {
-			
-		}
+		String content = readMethodBody(reader, method.getName());
 		
-		String content = "";
-		int depth = 1;
-		do {
-			char nextChar;
-			try {
-				nextChar = Tokenizer.readNextChar(reader);
-			} catch (EndOfStreamNotification e) {
-				throw new CompilationException("Unbalanced curly braces while reading method \"" + method.getName() + "\"");
-			} catch (IOException e) {
-				throw new CompilationException(e);
-			}
-			
-			if (nextChar == '}') {
-				depth--;
-			} else if (nextChar == '{') {
-				depth++;
-			}
-			
-			if (depth > 0) {
-				content += nextChar;
-			} else {
-				break;
-			}
-		} while (true);
-		
-		method.setContents(content.replaceAll("\n$", "").replaceAll("\n\t", "\n\t\t").replaceAll("^\t", "\t\t"));
+		method.setContents(indentAndFormatMethodBody(content));
 		
 		if (method.getName().equals(mokaClass.getName())) {
 			checkForConstructorConflict(mokaClass, method);
@@ -266,6 +298,42 @@ public class TransCompiler {
 		
 	}
 
+	private String readMethodBody(BufferedReader reader, String methodName)
+			throws CompilationException {
+		Tokenizer.scanToOpenBrace(reader);
+		try {
+			Tokenizer.absorbWhitespace(reader, false);
+		} catch (EndOfStreamNotification e1) {
+			
+		}
+		
+		String content = "";
+		int depth = 1;
+		do {
+			char nextChar;
+			try {
+				nextChar = Tokenizer.readNextChar(reader);
+			} catch (EndOfStreamNotification e) {
+				throw new CompilationException("Unbalanced curly braces while reading method \"" + methodName + "\"");
+			} catch (IOException e) {
+				throw new CompilationException(e);
+			}
+			
+			if (nextChar == '}') {
+				depth--;
+			} else if (nextChar == '{') {
+				depth++;
+			}
+			
+			if (depth > 0) {
+				content += nextChar;
+			} else {
+				break;
+			}
+		} while (true);
+		return content;
+	}
+
 	private void checkForConstructorConflict(MokaClass mokaClass, MokaMethod explicitConstructor) throws CompilationException {
 		for (MokaMethod existingExplicitConstructor : mokaClass.getExplicitConstructors()) {
 			if (existingExplicitConstructor.getArguments().hashCode() == explicitConstructor.getArguments().hashCode()) {
@@ -289,6 +357,10 @@ public class TransCompiler {
 		}
 		
 		return callArguments;
+	}
+
+	private String indentAndFormatMethodBody(String content) {
+		return content.replaceAll("\n$", "").replaceAll("\n\t", "\n\t\t").replaceAll("^\t", "\t\t");
 	}
 
 }

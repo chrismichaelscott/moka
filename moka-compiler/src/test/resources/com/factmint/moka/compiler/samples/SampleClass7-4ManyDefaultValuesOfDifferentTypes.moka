@@ -1,0 +1,8 @@
+constant Float GRAVITY = 9.8f;
+constant Double STATIONARY_SPEED = 0d;
+constant Integer ZERO_BALL = 0;
+constant Double STARTING_HEIGHT = 100d;
+
+Boolean doesBallHitTheGround(Float initialHeight = STARTING_HEIGHT, Double initialSpeed = STATIONARY_SPEED, Float acceleration = GRAVITY, Integer diameterOfBall = ZERO_BALL) {
+	return (FakeHelper.calculateDistanceTravelled(initialSpeed, acceleration) + diameterOfBall >= initialHeight);
+}

@@ -1,0 +1,5 @@
+constant Double PI = 3.14d;
+
+Double ratioOfArea(Double area, Double ratio = PI) {
+	return area * ratio;
+}

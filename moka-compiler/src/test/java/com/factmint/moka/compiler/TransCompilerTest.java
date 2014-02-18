@@ -77,13 +77,65 @@ public class TransCompilerTest {
 	}
 
 	@Test
-	public void transCompileSample66ConstructorVisibility() throws CompilationException, IOException {
+	public void transCompileSample6ConstructorVisibility() throws CompilationException, IOException {
 		TransCompiler compiler = new TransCompiler();
 		
 		String filename = this.getClass().getResource("/com/factmint/moka/compiler/samples/SampleClass6ConstructorVisibility.moka").getFile();
 		String java = compiler.compile(new File(filename));
 		
 		String expectedJavaFilename = this.getClass().getResource("/com/factmint/moka/compiler/expected/SampleClass6ConstructorVisibility.java").getFile();
+		byte[] encoded = Files.readAllBytes(Paths.get(expectedJavaFilename));
+		
+		assertEquals("The compiled file should match the expected Java.", Charset.forName("UTF-8").decode(ByteBuffer.wrap(encoded)).toString(), java);
+	}
+
+	@Test
+	public void transCompileSample7DefaultValues() throws CompilationException, IOException {
+		TransCompiler compiler = new TransCompiler();
+		
+		String filename = this.getClass().getResource("/com/factmint/moka/compiler/samples/SampleClass7DefaultValues.moka").getFile();
+		String java = compiler.compile(new File(filename));
+		
+		String expectedJavaFilename = this.getClass().getResource("/com/factmint/moka/compiler/expected/SampleClass7DefaultValues.java").getFile();
+		byte[] encoded = Files.readAllBytes(Paths.get(expectedJavaFilename));
+		
+		assertEquals("The compiled file should match the expected Java.", Charset.forName("UTF-8").decode(ByteBuffer.wrap(encoded)).toString(), java);
+	}
+
+	@Test
+	public void transCompileSample7_2ManyDefaultValues() throws CompilationException, IOException {
+		TransCompiler compiler = new TransCompiler();
+		
+		String filename = this.getClass().getResource("/com/factmint/moka/compiler/samples/SampleClass7-2ManyDefaultValues.moka").getFile();
+		String java = compiler.compile(new File(filename));
+		
+		String expectedJavaFilename = this.getClass().getResource("/com/factmint/moka/compiler/expected/SampleClass7-2ManyDefaultValues.java").getFile();
+		byte[] encoded = Files.readAllBytes(Paths.get(expectedJavaFilename));
+		
+		assertEquals("The compiled file should match the expected Java.", Charset.forName("UTF-8").decode(ByteBuffer.wrap(encoded)).toString(), java);
+	}
+
+	@Test
+	public void transCompileSample7_4ManyDefaultValuesOfDifferentTypes() throws CompilationException, IOException {
+		TransCompiler compiler = new TransCompiler();
+		
+		String filename = this.getClass().getResource("/com/factmint/moka/compiler/samples/SampleClass7-4ManyDefaultValuesOfDifferentTypes.moka").getFile();
+		String java = compiler.compile(new File(filename));
+		
+		String expectedJavaFilename = this.getClass().getResource("/com/factmint/moka/compiler/expected/SampleClass7-4ManyDefaultValuesOfDifferentTypes.java").getFile();
+		byte[] encoded = Files.readAllBytes(Paths.get(expectedJavaFilename));
+		
+		assertEquals("The compiled file should match the expected Java.", Charset.forName("UTF-8").decode(ByteBuffer.wrap(encoded)).toString(), java);
+	}
+
+	@Test
+	public void transCompileSample8ConstantInitialization() throws CompilationException, IOException {
+		TransCompiler compiler = new TransCompiler();
+		
+		String filename = this.getClass().getResource("/com/factmint/moka/compiler/samples/SampleClass8ConstantInitialization.moka").getFile();
+		String java = compiler.compile(new File(filename));
+		
+		String expectedJavaFilename = this.getClass().getResource("/com/factmint/moka/compiler/expected/SampleClass8ConstantInitialization.java").getFile();
 		byte[] encoded = Files.readAllBytes(Paths.get(expectedJavaFilename));
 		
 		assertEquals("The compiled file should match the expected Java.", Charset.forName("UTF-8").decode(ByteBuffer.wrap(encoded)).toString(), java);

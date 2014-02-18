@@ -26,6 +26,11 @@ public class MokaClass {
 	private String superClass = "Object";
 	
 	/**
+	 * private constants which are to be statically instantiated
+	 */
+	private List<MokaConstant> constants = new ArrayList<MokaConstant>();
+	
+	/**
 	 * private fields which are to be set using setters in the DI model
 	 */
 	private List<MokaVariable> dependencies = new ArrayList<MokaVariable>();
@@ -82,6 +87,14 @@ public class MokaClass {
 		this.superClass = superClass;
 	}
 	
+	public List<MokaConstant> getConstants() {
+		return constants;
+	}
+
+	public void setConstants(List<MokaConstant> constants) {
+		this.constants = constants;
+	}
+	
 	public List<MokaVariable> getDependencies() {
 		return dependencies;
 	}
@@ -97,7 +110,7 @@ public class MokaClass {
 	public void setFields(List<MokaVariable> fields) {
 		this.fields = fields;
 	}
-	
+
 	public List<MokaMethod> getMethods() {
 		return methods;
 	}
@@ -120,6 +133,32 @@ public class MokaClass {
 
 	public void setExplicitConstructors(List<MokaMethod> explicitConstructors) {
 		this.explicitConstructors = explicitConstructors;
+	}
+
+	public boolean containsMethodWithMatchingSignature(MokaMethod other) {
+		for (MokaMethod method : getMethods()) {
+			if (! method.getReturnType().equals(other.getReturnType())) {
+				continue;
+			}
+			
+			if (method.getArguments().size() != other.getArguments().size()) {
+				continue;
+			}
+			
+			boolean match = true;
+			for (int x = 0; x < method.getArguments().size(); x++) {
+				if (! method.getArguments().get(x).getType().equals(other.getArguments().get(x).getType())) {
+					match = false;
+					break;
+				}
+			}
+			
+			if (match) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 }

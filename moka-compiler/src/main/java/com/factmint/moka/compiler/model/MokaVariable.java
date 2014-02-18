@@ -29,5 +29,18 @@ public class MokaVariable {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (! (other instanceof MokaMethodVariable)) {
+			return false;
+		}
+		
+		MokaMethodVariable otherMokaMethodVariable = (MokaMethodVariable) other;
+		
+		return 
+				otherMokaMethodVariable.getName().equals(getName()) &&
+				otherMokaMethodVariable.getType().equals(getType());
+	}
 
 }

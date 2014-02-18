@@ -8,12 +8,12 @@ public class MokaMethod extends MokaMember {
 	private String name;
 	private Visibility visibility = Visibility.PUBLIC;
 	private String returnType;
-	private List<MokaVariable> arguments = new ArrayList<MokaVariable>();
+	private List<MokaMethodVariable> arguments = new ArrayList<MokaMethodVariable>();
 	private boolean isStatic;
 	private boolean isFinal;
 	private String contents;
 	
-	public static MokaMethod create(String name, Visibility visibility, String returnType, List<MokaVariable> arguments, String contents) {
+	public static MokaMethod create(String name, Visibility visibility, String returnType, List<MokaMethodVariable> arguments, String contents) {
 		MokaMethod method = new MokaMethod();
 		
 		method.setName(name);
@@ -27,13 +27,13 @@ public class MokaMethod extends MokaMember {
 
 	public static MokaMethod getDefaultGetter(String name, MokaVariable dependency) {
 		String content = "\t\treturn " + dependency.getName() + ";";
-		return create(name, Visibility.PUBLIC, dependency.getType(), new ArrayList<MokaVariable>(), content );
+		return create(name, Visibility.PUBLIC, dependency.getType(), new ArrayList<MokaMethodVariable>(), content );
 	}
 
 	public static MokaMethod getDefaultSetter(String name, MokaVariable dependency) {
 		String content = "\t\tthis." + dependency.getName() + " = " + dependency.getName() + ";";
-		ArrayList<MokaVariable> setterArguments = new ArrayList<MokaVariable>();
-		setterArguments.add(dependency);
+		ArrayList<MokaMethodVariable> setterArguments = new ArrayList<MokaMethodVariable>();
+		setterArguments.add(MokaMethodVariable.create(dependency));
 		return create(name, Visibility.PUBLIC, void.class.getName(), setterArguments, content );
 	}
 	
@@ -61,11 +61,11 @@ public class MokaMethod extends MokaMember {
 		this.returnType = returnType;
 	}
 
-	public List<MokaVariable> getArguments() {
+	public List<MokaMethodVariable> getArguments() {
 		return arguments;
 	}
 
-	public void setArguments(List<MokaVariable> arguments) {
+	public void setArguments(List<MokaMethodVariable> arguments) {
 		this.arguments = arguments;
 	}
 

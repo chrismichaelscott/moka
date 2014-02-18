@@ -158,4 +158,8 @@ public class Tokenizer {
 	public static void absorbWhitespace(BufferedReader reader) throws EndOfStreamNotification {
 		absorbWhitespace(reader, true);
 	}
+	
+	public static void reset(BufferedReader reader) throws IOException {
+		reader.reset();
+	}
 }

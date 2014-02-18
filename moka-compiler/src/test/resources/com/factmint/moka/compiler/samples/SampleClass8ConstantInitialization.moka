@@ -1,0 +1,5 @@
+constant Double PI = 3.14d;
+
+constant Double VOLUME_OF_EARTH {
+	define 4 / 3 * PI * Math.pow(6378100. 2);
+};
