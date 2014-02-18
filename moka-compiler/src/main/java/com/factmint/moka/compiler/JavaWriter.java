@@ -2,6 +2,8 @@ package com.factmint.moka.compiler;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.factmint.moka.compiler.model.MokaClass;
@@ -55,7 +57,17 @@ public class JavaWriter {
 		}
 		
 		List<MokaMethod> wrapperMethods = new ArrayList<MokaMethod>();
-		for (MokaMethod method : mokaClass.getMethods()) {
+		
+		List<MokaMethod> argumentSortedMethods = new ArrayList<MokaMethod>();
+		argumentSortedMethods.addAll(mokaClass.getMethods());
+		
+		Collections.sort(argumentSortedMethods, new Comparator<MokaMethod>() {
+			public int compare(MokaMethod a, MokaMethod b) {
+				return b.getArguments().size() - a.getArguments().size();
+			}
+		});
+		
+		for (MokaMethod method : argumentSortedMethods) {
 			List<MokaMethodVariable> requiredParameters = new ArrayList<MokaMethodVariable>();
 			List<MokaMethodVariable> optionalParameters = new ArrayList<MokaMethodVariable>();
 			
