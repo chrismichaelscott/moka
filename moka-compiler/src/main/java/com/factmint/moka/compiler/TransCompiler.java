@@ -30,8 +30,14 @@ public class TransCompiler {
 
 	public String compile(File mokaFile) throws CompilationException, FileNotFoundException {
 		
-		MokaClass mokaClass = new MokaClass();
-		mokaClass.setName(mokaFile.getName().replaceAll(".moka$", ""));
+		MokaClass mokaClass = createJavaClassFromMokaClassFile(mokaFile);
+		
+		parseMokaClassFile(mokaFile, mokaClass);
+		
+		return new JavaWriter(mokaClass).toString();
+	}
+
+	private void parseMokaClassFile(File mokaFile, MokaClass mokaClass) throws FileNotFoundException, CompilationException {
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(mokaFile), charSet));
 		
@@ -46,24 +52,33 @@ public class TransCompiler {
 			}
 			
 		} while (! finished);
-		
-		return new JavaWriter(mokaClass).toString();
+	}
+
+	private MokaClass createJavaClassFromMokaClassFile(File mokaFile) {
+		MokaClass mokaClass = new MokaClass();
+		mokaClass.setName(mokaFile.getName().replaceAll(".moka$", ""));
+		return mokaClass;
 	}
 	
 	private void processToken(String token, MokaClass mokaClass, BufferedReader reader) throws CompilationException {
 		if (token.equals("import")) {
+			
 			processImportDeclaration(mokaClass, reader);
 
 		} else if (token.equals("constant")) {
+			
 			processConstantDeclaration(mokaClass, reader);
 			
 		} else if (token.equals("dependency")) {
+			
 			processDependencyDeclaration(mokaClass, reader);
 
 		} else if (token.equals("field")) {
+			
 			processFieldDeclaration(mokaClass, reader);
 
 		} else {
+			
 			processMethodDeclaration(token, mokaClass, reader);
 
 		}
@@ -172,12 +187,31 @@ public class TransCompiler {
 			BufferedReader reader) throws CompilationException {
 		MokaMethod method = new MokaMethod();
 		
-		String[] extraTokens = Tokenizer.getTokensBeforeOpenParenthesis(reader);
-		String[] tokens = new String[extraTokens.length + 1];
-		tokens[0] = token;
-		for (int x = 0; x < extraTokens.length; x++) {
-			tokens[x + 1] = extraTokens[x];
+		readMethodNameAndModifiers(token, reader, method);
+		
+		token = readMethodArguments(token, reader, method);
+		
+		String content = readMethodBody(reader, method.getName());
+		
+		method.setContents(indentAndFormatMethodBody(content));
+		
+		if (method.getName().equals(mokaClass.getName())) {
+			checkForConstructorConflict(mokaClass, method);
+			
+			mokaClass.getExplicitConstructors().add(method);
+		} else if (method.getName().equals("construct")) {
+			defineConstructConstructor(mokaClass, method);
+		} else {			
+			mokaClass.getMethods().add(method);
 		}
+		
+	}
+
+	private void readMethodNameAndModifiers(String firstToken,
+			BufferedReader reader, MokaMethod method)
+			throws CompilationException {
+		
+		String[] tokens = getMethodNameAndModifierTokens(firstToken, reader);
 		
 		Visibility visibility = Visibility.PUBLIC;
 		String returnType = void.class.getName();
@@ -234,7 +268,21 @@ public class TransCompiler {
 		method.setVisibility(visibility);
 		method.setFinal(isFinal);
 		method.setStatic(isStatic);
-		
+	}
+
+	private String[] getMethodNameAndModifierTokens(String firstToken,
+			BufferedReader reader) throws CompilationException {
+		String[] extraTokens = Tokenizer.getTokensBeforeOpenParenthesis(reader);
+		String[] tokens = new String[extraTokens.length + 1];
+		tokens[0] = firstToken;
+		for (int x = 0; x < extraTokens.length; x++) {
+			tokens[x + 1] = extraTokens[x];
+		}
+		return tokens;
+	}
+
+	private String readMethodArguments(String token, BufferedReader reader,
+			MokaMethod method) throws CompilationException {
 		do {
 			try {
 				char nextChar = Tokenizer.readNextChar(reader);
@@ -269,33 +317,7 @@ public class TransCompiler {
 				throw new CompilationException(e);
 			}
 		} while (true);
-		
-		String content = readMethodBody(reader, method.getName());
-		
-		method.setContents(indentAndFormatMethodBody(content));
-		
-		if (method.getName().equals(mokaClass.getName())) {
-			checkForConstructorConflict(mokaClass, method);
-			
-			mokaClass.getExplicitConstructors().add(method);
-		} else if (method.getName().equals("construct")) {
-			mokaClass.getConstructors().add(method);
-			
-			MokaMethod explicitConstructor = new MokaMethod();
-			explicitConstructor.setName(mokaClass.getName());
-			explicitConstructor.setArguments(method.getArguments());
-			explicitConstructor.setVisibility(method.getVisibility());
-			explicitConstructor.setContents("\t\tconstruct(" + getMethodCallArguments(method) + ");");
-			
-			checkForConstructorConflict(mokaClass, explicitConstructor);
-			
-			mokaClass.getExplicitConstructors().add(explicitConstructor);
-			
-			method.setVisibility(Visibility.PRIVATE);
-		} else {			
-			mokaClass.getMethods().add(method);
-		}
-		
+		return token;
 	}
 
 	private String readMethodBody(BufferedReader reader, String methodName)
@@ -340,6 +362,23 @@ public class TransCompiler {
 				throw new CompilationException("There are conflicting constructors in " + mokaClass.getName());
 			}
 		}
+	}
+
+	private void defineConstructConstructor(MokaClass mokaClass,
+			MokaMethod method) throws CompilationException {
+		mokaClass.getConstructors().add(method);
+		
+		MokaMethod explicitConstructor = new MokaMethod();
+		explicitConstructor.setName(mokaClass.getName());
+		explicitConstructor.setArguments(method.getArguments());
+		explicitConstructor.setVisibility(method.getVisibility());
+		explicitConstructor.setContents("\t\tconstruct(" + getMethodCallArguments(method) + ");");
+		
+		checkForConstructorConflict(mokaClass, explicitConstructor);
+		
+		mokaClass.getExplicitConstructors().add(explicitConstructor);
+		
+		method.setVisibility(Visibility.PRIVATE);
 	}
 
 	private String getMethodCallArguments(MokaMethod method) {
